@@ -1,0 +1,9 @@
+The sprite map contains many terrain sprites.
+To import it into unity change the following settings
+Sprite Mode -> Multiple
+Pixels Per Unit -> 16
+Filter Mode -> Point
+Compression -> None
+
+Use the sprite editor to slice the sprite by cell size
+set cell size X and Y to 16 and offset to 2
