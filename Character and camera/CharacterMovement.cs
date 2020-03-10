@@ -27,16 +27,25 @@ public class CharacterMovement : MonoBehaviour
         if ((Input.GetKey("d") || Input.GetKey("right")) && ! isNormalForceInDirection(4) )
         {
             transform.Translate(0.1f, 0f, 0f);
+            //rbBox.AddForce(new Vector2(0.1f, 0), ForceMode2D.Impulse);
+            //rbBox.velocity = new Vector2(5f, rbBox.velocity.y);
         }
         else if ((Input.GetKey("a") || Input.GetKey("left")) && ! isNormalForceInDirection(2))
         {
             transform.Translate(-0.1f, 0f, 0f);
+            //rbBox.AddForce(new Vector2(-0.1f, 0), ForceMode2D.Impulse);
+            //rbBox.velocity = new Vector2(-5f,  rbBox.velocity.y);
         }
+        //else
+      // {
+            //rbBox.velocity = new Vector2(0f, rbBox.velocity.y);
+        //}
 
         if ((Input.GetKeyDown("w") || Input.GetKeyDown("up")) && isNormalForceInDirection(1))// && rb.GetContacts.y == -1)//isOnGround == true)
         {
             rbBox.AddForce(new Vector2(0, 8.5f), ForceMode2D.Impulse);
         }
+        
     }
 
     public bool isNormalForceInDirection(int direction) // 1 is up, 2 is right, 3 is down, 4 is left

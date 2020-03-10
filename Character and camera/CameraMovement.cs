@@ -4,80 +4,83 @@ using UnityEngine;
 
 public class CameraMovement : MonoBehaviour
 {
-    // Start is called before the first frame update
-    public GameObject player;
     Rigidbody rb;
+    Rigidbody2D parentRB;
 
+    public float jumpYCoordinate;
 
-    void Awake()
-    {
-        rb = GetComponent<Rigidbody>();
-    }
+    public bool falling = false;
+    public bool jumping = false;
+    public bool correctCamera = false;
 
+    // Start is called before the first frame update
     void Start()
     {
-        Vector3 startPosition = new Vector3();
-        startPosition.Set(player.transform.position.x, player.transform.position.y + 1.5f, -10f);
-        transform.position = startPosition;
+        rb = GetComponent<Rigidbody>();
+        parentRB = transform.parent.GetComponent<Rigidbody2D>();
+        jumpYCoordinate = transform.parent.position.y;
+        transform.position.Set(transform.parent.position.x, transform.parent.position.y + 2f, -10);
+
     }
 
     // Update is called once per frame
     void Update()
     {
-        float xTranslate = 0f;
-        float yTranslate = 0f;
+        float xTranslate = 0;
+        float yTranslate = 0;
+ 
+        // move right
+        if ((Input.GetKey("d") || Input.GetKey("right")) && (! transform.parent.GetComponent<CharacterMovement>().isNormalForceInDirection(4) && transform.parent.position.x > transform.position.x - 3f))
+            xTranslate += 0.1f;
+        // move left
+        else if ((Input.GetKey("a") || Input.GetKey("left")) && (! transform.parent.GetComponent<CharacterMovement>().isNormalForceInDirection(2) && transform.parent.position.x < transform.position.x + 3f))
+            xTranslate += -0.1f;
 
-
-        // was falling but just hit the gound
-        if(rb.isKinematic == false && player.GetComponent<CharacterMovement>().isNormalForceInDirection(1) == true)
+        // jump
+        if ((Input.GetKeyDown("w") || Input.GetKey("up")) && (transform.parent.GetComponent<CharacterMovement>().isNormalForceInDirection(1) && ! jumping))
         {
-            rb.isKinematic = true;
-            //transform.position.Set(transform.position.x, player.transform.position.y, transform.position.z);
-            yTranslate += player.transform.position.y - transform.position.y + 1.5f;
-            //justLandedFromFar = true;
-            // resetting the camera after a far landing needs to be handled the next fram
-            // otherwise the position of the player is based off of the physics engine of 
-            // where it would be if there was no collider to land on
+            jumpYCoordinate = transform.parent.position.y;
+            jumping = true;
+        }
+        // reached jump peak
+        else if (transform.parent.GetComponent<Rigidbody2D>().velocity.y <= 0f && jumping)
+        {
+            jumping = false;
+            falling = true;
+        }
+        // fall off platform
+        else if (! transform.parent.GetComponent<CharacterMovement>().isNormalForceInDirection(1) && (! jumping && ! falling))
+        {
+            jumpYCoordinate = transform.parent.position.y;
+            falling = true;
+            jumping = false;
+        }
+        // falling far
+        else if ( !transform.parent.GetComponent<CharacterMovement>().isNormalForceInDirection(1) && transform.parent.position.y < jumpYCoordinate - 1f)
+        {
+            jumping = false;
+            falling = true;
+            if (transform.position.y > transform.parent.position.y - 3)
+                yTranslate -= 0.05f;
+        }
+        // landed after fall far and needs to correct camera
+        else if ((transform.parent.GetComponent<CharacterMovement>().isNormalForceInDirection(1) && transform.position.y < transform.parent.position.y + 2f) || correctCamera )
+        {
+            correctCamera = true;
+            if(transform.position.y > transform.parent.position.y + 1.7f) // move up to correct location
+            {
+                yTranslate += transform.parent.position.y + 2f - transform.position.y;
+                correctCamera = false;
+            }
+            else // move up 0.3 closer to correct location
+                yTranslate += 0.3f;
         }
 
-        // move camera right
-        if ((Input.GetKey("d") || Input.GetKey("right")) && player.GetComponent<CharacterMovement>().isNormalForceInDirection(4) == false) // move camera right
-        {
-            if (player.transform.position.x + 3.0f >= transform.position.x)
-                xTranslate += 0.2f;
-            else if(player.transform.position.x - 3.0f >= transform.position.x)
-                xTranslate += 0.1f;
-        }
-        // move camera left
-        else if ((Input.GetKey("a") || Input.GetKey("left")) && player.GetComponent<CharacterMovement>().isNormalForceInDirection(2) == false) // move camera left
-        {
-            if (player.transform.position.x - 3.0f <= transform.position.x)
-                xTranslate += -0.2f;
-            else if(player.transform.position.x + 3.0f <= transform.position.x)
-                xTranslate += -0.1f;
-        }
-
-
-
-        // falling
-        if (player.transform.position.y <= transform.position.y - 3)
-        {
-            //yTranslate = player.transform.position.y + 3.0f;
-            rb.isKinematic = false;
-            //rb.velocity = player.getVelocity();
-            rb.velocity = player.GetComponent<CharacterMovement>().getVelocity() + new Vector3(0, -1, 0);
-        }
-
-        //moving up or falling far
-        if ((player.transform.position.y >= transform.position.y + 3))
-        {
-            if (rb.isKinematic == true)
-                yTranslate += 0.1f;
-            else
-                rb.velocity = player.GetComponent<CharacterMovement>().getVelocity();
-        }
+        if (transform.parent.GetComponent<CharacterMovement>().isNormalForceInDirection(1))
+            falling = false;
 
 
         transform.Translate(xTranslate, yTranslate, 0f);
+
     }
 }
