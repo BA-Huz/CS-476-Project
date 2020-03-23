@@ -1,0 +1,41 @@
+The level exists as several grids of tiles stacked on top of each other. Each layer has unique behaviour with the player, such as one directional collision.
+There are six layers specifically
+    Decoration      No collisions, rendered above all other layers
+    Collectible     Holds all items that are instantiated as unique elements
+    Hazard          Colliding with these deals damage to the player
+    Bridge          These tiles only have collisions on the top
+    Ground          Standard collision
+    Underground     No collsions, rendered below all other layers
+
+To reduce the amount of data used to store and load these arrays, a compression algorithym is used.
+Because most levels will have similiar tiles grouped together, especially horizontally, levels are stored in the following format
+
+MinLevelBounds  The lower left most point that is used
+MaxLevelBounds  The upper right most point that is used
+StartLocation   The point the player spawns
+EndLocations    the point the coop spawns
+x               deliminator used to split values
+n               represents a null tile
+
+
+(Vector3Int MinLevelBounds)x(Vector3Int MaxLevelBounds)x(Vector3Int StartLocation)x(Vector3Int EndLocation)xnx64x16x23...
+
+After the first 4 vectors in the string comes a long string of tile ids paired with counts.
+When loading a level, begin on the top tile array, at the MinLevelBounds.
+for each id count pair, place a tile at the current position, decrement count by one, and move the current position one to the right, moving it up a layer and reseting it when the MaxLevelBounds.x is reached.
+because null tiles don't need to be placed, a simple calculation jumps the for loop ahead by count steps, decreasing the number of operations required by count steps.
+
+This formula would not be efficient if the tile data was completely random, but it is well optimized for most levels.
+Many layers, are mostly composed of null tiles, and this can remove huge amounts of data from needing to be stored.
+
+Generally levels will look something like 
+
+NNNNN
+NNNNN
+GGGGG
+DDDDD
+DDDDD
+
+which would become Dx10xGx5xnx10
+
+
