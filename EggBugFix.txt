@@ -1,0 +1,21 @@
+/*
+    The following update function is intended to compinsate for a weird bug
+    that may or may not exist where after a prolonged time in game an egg spawns
+    at the coop position yet this seems impossible via code and may be because
+    we are the big dumb and spawned an egg on the coop by accident when choosing egg
+    locations. Attatch this code snippet to the EggInitilizer script
+*/
+    void Update()
+    {
+        Vector3 coopLocation = GetComponent<CoopInitilizer>().coopLocation;
+        for (int i = 0; i < eggLocations.Length; i++)
+        {
+            if (eggLocations[i].x > coopLocation.x - 0.4f && eggLocations[i].x < coopLocation.x + 0.4f)
+            {
+                if (eggLocations[i].y > coopLocation.y - 0.4f && eggLocations[i].y < coopLocation.y + 0.4f)
+                {
+                    Destroy(eggs[i]);
+                }
+            }
+        }
+    }
