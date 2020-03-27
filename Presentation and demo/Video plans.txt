@@ -1,0 +1,26 @@
+1) Intro: Alex slide 1
+2) problems: Alex slide 2
+3) Inspirations: Viktor slide 3
+4) Main func reqts: Viktor slide 4
+5) Design patterns and game hierarchy: Alex slides 5 to 9
+6) Edditor, server/db and diagrams: Viktor slides 10 to 13
+
+approx 10 min
+
+7) Demonstration of using edditor to make a demo level that will make
+use of all game mechanics: Viktor
+8) Demonstration of Game logic in Demo level
+
+approx 10 min
+
+
+9) Content and functionality we would of included if time had permited
+
+place your ideas here
+
+Level name, accounts so players can edit their old levels,
+After buillding a level players must beat their level to submit it
+Screach power up the pushes enemies away, Null power up that removes
+power ups, moving platforms, smoother player enemy spike collisions
+
+whoever had the least voice time will do this part
